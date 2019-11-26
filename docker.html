@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <meta name="Author" content="Alvaro Montes">
+        <link rel="stylesheet" href="css/docker.css" type="text/css">
+        <title>Document</title>
+    </head>
+    <body>
+        <div>
+            <h1>Docker</h1>
+            <div>
+                <p>Docker es un sistema de virtualizacion que comparte con el anfitrion el
+                    Kernel y el Sistema de Archivos El anfitrion siempre es un sistema Linux. Si
+                    estamos en Windows o Mac, necesitare una maquina virtual Windows virtualizada
+                    con VirtualBox o similar
+                </p>
+                <p>
+                    Un software de maquinas virtuales necesita instalar el sistema operativo
+                    completos. Ejemplos de sistema de virtualizacion:
+                </p>
+                <ul>
+                    <li>VirtualBox (Multiples plataformas)</li>
+                    <li>Parallels (Para Mac)</li>
+                    <li>VMWare (Multiples plataformas)</li>
+                    <li>QMEU (Para Linux)</li>
+                    <li>XEN (Para Unix/Linux)</li>
+                    <li>KVM (Para Unix/Linux)</li>
+                </ul>
+                <p>
+                    Un software de contenedores es un sistema de virtualizacion que comparte el
+                    Kernel con el anfitrion. Se hace en el concepto de microservicio, donde tengo
+                    todos los programas instalados, configurados y funcionando, gracias a los
+                    contenedores. Ejemplos de software de contenedores:
+                </p>
+                <ul>
+                    <li>LXD</li>
+                    <li>Docker</li>
+                    <li>Kubernetes</li>
+                </ul>
+                <img class="diagrama" src="img/Diagrama1.png" alt="Diagrama">
+                <p>
+                    Para saber mas del tema:
+                </p>
+                <ul>
+                    <li>
+                        <a href="https://www.docker.com/">oficial de Docker</a>
+                    </li>
+                    <li>
+                        <a href="https://hub.docker.com/">Docker Hub (listado contenedores)</a>
+                    </li>
+                    <li>
+                        <a href="https://docs.docker.com/get-started/">Tutorial de Docker</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div id="dockerfile">
+            <h2></h2>
+            <p>
+                Un
+                <span id="descatado">dockerfile</span>
+                es una receta para crear una imagen para una aplicacion particular de Docker. De
+                este modo podemos tomar una imagen base, instalar programas, configurar esos
+                programas y dejarla preparada para crear contenedores a partir de ella.
+            </p>
+        </div>
+        <pre>
+            # use phusion/baseimage as base image.
+            from ubuntu/latest
+            
+            # use baseimage-docker's init system.
+            cmd ["/sbin/my_init"]
+            
+            # install prerequisites
+            run apt-get update; \
+                apt-get install -y udhcpd
+            
+            # set up start up scripts
+            run mkdir /etc/service/udhcpd
+            add udhcpd.sh /etc/service/udhcpd/run
+            run chmod +x /etc/service/udhcpd/run
+            
+            # clean up apt when done.
+            run apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+            
+            # expose the port
+            expose 67
+            expose 67/udp
+            expose 68
+            expose 68/udp
+            
+            # volumes
+            volume /data
+    </pre>
+     <h2>traduccion</h2>
+    <pre>
+        #usamos phusion / baseimage agrega una imagen base.
+        from  ubuntu/latest
+
+        #usamos baseimage-docker's init system para iniciar el sistema.
+        cmd ["/sbin/my_init"]
+
+        #usamos install prerequisites para instalar la prerequisitos.
+        run apt-get update; \
+            apt-get install -y udhcpd
+
+        #usamos set up start up scripts para crear los script de inicio.
+        run mkdir /etc/service/udhcpd
+        add udhcpd.sh /etc/service/udhcpd/run
+        run chmod +x /etc/service/udhcpd/run
+
+        #usamos clean up apt when done para limpiar apt cuando termine.
+        run apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+        #usamos expose the port para exponer el puerto.
+        expose 67
+        expose 67/udp
+        expose 68
+        expose 68/udp
+
+        #usamos volumes para 
+        volume /data
+    </pre>
+        <p>
+            La línea
+            <bold>FROM ubuntu:latest</bold>
+            sirve para indicar la imagen base que queremos usar para nuestro contenedor.
+        </p>
+
+        <p></p>
+
+        <p>
+            CREAMOS EL ARCHIVOS udhcpd.conf
+        </p>
+        <pre>
+    # the start and end of the ip lease block
+    start	172.17.0.200
+    end		172.17.0.210
+    
+    # the interface that udhcpd will use
+    interface	eth0
+    
+    opt	dns	192.168.18.3 8.8.8.8
+    option	subnet	255.255.0.0
+    opt	router	172.17.0.1
+    # opt	wins	192.168.10.10
+    # option	dns	129.219.13.81	# appended to above dns servers for a total of 3
+    option	domain	local
+    option	lease	864000		
+    </pre>
+
+        <p>CREAR EL CONTENEDOR:
+        </p>
+        docker build .
+        <p>
+            LANZAR EL CONTENEDOR: docker run -d --net=host -p 67:67 -p 67:67/udp -p 68:68 -p
+            68:68/udp --name=dhcpd -v "RUTA AL DIRECTORIO udhcpd"/data ubuntu:latest
+        </p>
+    </p>
+    <p>ABRIR TERMINAL EN CONTENEDOR: docker exec -ti NOMBRE_CONTENEDOR /bin/bash</p>
+    <a href="index.html"><img id="flecha" src="img/flecha.png" alt="flecha"></a>
+</body>
+</html>
