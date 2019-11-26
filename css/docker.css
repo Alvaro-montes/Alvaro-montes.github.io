@@ -1,0 +1,22 @@
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #E8C39E;
+}
+h1{
+    text-align: center;
+    color: #96305A;
+    font-weight: bold;
+}
+.diagrama{
+    margin-left: 300px;
+    border: 2px solid #96305A;
+    border-radius: 10px;
+}
+h2{
+    color: #96305A;
+    font-weight: bold;
+}
+#flecha{
+    width: 5%;
+    float: right;
+}
